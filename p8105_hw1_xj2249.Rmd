@@ -1,6 +1,6 @@
 ---
-title: "p8105_hw1_xj2249"
-author: "jx"
+title: "p8105_hw1_xj2249"  
+author: "jx2249"  
 date: "2019/9/12"
 output: github_document
 editor_options: 
@@ -8,87 +8,87 @@ editor_options:
 ---
 
 # Problem 1 
-## create a data frame
+## Create a data frame
 ```{r, message = FALSE}
 library(tidyverse)
-my_data_frame <- tibble(
-                        rnorm_sample = rnorm(8), 
-                        sample_pos = rnorm_sample > 0,
-                        character_sample = c(rep(c("dog","cat"),4)), 
-                        factor_sample = factor(c("a","b","c","a","b","c","a","b"))
-                        )
+p1_df <- tibble(
+                rnorm_sample = rnorm(8), 
+                sample_pos = rnorm_sample > 0,
+                character_vec = c(rep(c("dog","cat"),4)), 
+                factor_vec = factor(c("a","b","c","a","b","c","a","b"))
+                )
                
-sapply(my_data_frame, mean)
+sapply(p1_df, mean)
 
 ```
-It works to take the mean of the random sample and the logical variable, but it doesn't when it 
-comes to the logical and the factor variable.
+It works to take the mean of the random sample and the logical variable, but it doesn't when it comes to the character and the factor variable.
 
 ## Apply the "as.numeric function"
 ```{r, eval = FALSE}
 # convert the logical vector to numeric, and multiply the random sample by the result
-as.numeric(pull(my_data_frame, sample_pos ))
+as.numeric(pull(p1_df, sample_pos ))
 # convert the logical vector to a factor, and multiply the random sample by the result
-as.numeric(pull(my_data_frame, character_sample ))
+as.numeric(pull(p1_df, character_vec ))
 # convert the logical vector to a factor and then convert the result to numeric, and multiply the random sample by the result
-as.numeric(pull(my_data_frame, factor_sample ))
+as.numeric(pull(p1_df, factor_vec ))
 ```
 As the result shows, the logical variable is able to be converted into numbers(1 or 0).  
-The character variable and the factor variables are not allowed since in my case, they are neither numeric nor logical value. 
+The character variable and the factor variables are not allowed since in my case, they are neither numeric nor logical value, which explains why means can't be taken above.
 
 ## We're converting variables ! 
 ```{r }
-as.numeric(pull(my_data_frame, sample_pos )) * pull(my_data_frame, rnorm_sample )
-as.factor(pull(my_data_frame, sample_pos )) * pull(my_data_frame, rnorm_sample )
-as.numeric(as.factor(pull(my_data_frame, sample_pos ))) * pull(my_data_frame, rnorm_sample )
+as.numeric(pull(p1_df, sample_pos )) * pull(p1_df, rnorm_sample )
+as.factor(pull(p1_df, sample_pos )) * pull(p1_df, rnorm_sample )
+as.numeric(as.factor(pull(p1_df, sample_pos ))) * pull(p1_df, rnorm_sample )
 ```
 
 # Problem 2
 ## Create a new data frame
 ```{r}
-p2_data_frame <- tibble(
-                        x = rnorm(500), 
-                        y = rnorm(500),
-                        sum_compare = (x + y) > 1, 
-                        numeric_sum = as.numeric(sum_compare),
-                        factor_sum = as.factor(sum_compare)
-                        )
+p2_df <- tibble(
+                x = rnorm(500), 
+                y = rnorm(500),
+                sum_compare = (x + y) > 1, 
+                numeric_sum = as.numeric(sum_compare),
+                factor_sum = as.factor(sum_compare)
+                )
 ```
 
-* The size of the dataset is `r nrow(p2_data_frame)` and `r nrow(p2_data_frame)`
+* The size of the dataset is `r nrow(p2_df)` and `r nrow(p2_df)`
 * The mean, median, and standard deviation of x are
-`r mean(pull(p2_data_frame,x)) `, `r median(pull(p2_data_frame,x)) ` and `r sd(pull(p2_data_frame,x))`
-* The proportion of cases for which x + y > 1 is `r mean(pull(p2_data_frame,numeric_sum))`
+`r mean(pull(p2_df,x)) `, `r median(pull(p2_df,x)) ` and `r sd(pull(p2_df,x))`
+* The proportion of cases for which x + y > 1 is `r mean(pull(p2_df,numeric_sum))`
 
 ## Make scatterplots of y vs x
-```{r}
+```{r, message = FALSE}
 library(ggplot2)
 plot1 <- 
-        p2_data_frame %>% 
+        p2_df %>% 
         ggplot(aes(x = x, y = y, color = sum_compare)) + 
         geom_point() + 
         labs(title = "The first scatterplot") + 
         theme(plot.title = element_text(hjust = 0.5))
         
 plot1 
-plot2 <-
-        p2_data_frame %>% 
-        ggplot(aes(x = x, y = y, color = numeric_sum)) + 
-        geom_point()+ 
-        labs(title = "The second scatterplot")+ 
-        theme(plot.title = element_text(hjust = 0.5))
+plot2 <- p2_df %>% 
+         ggplot(aes(x = x, y = y, color = numeric_sum)) + 
+         geom_point() + 
+         labs(title = "The second scatterplot") + 
+         theme(plot.title = element_text(hjust = 0.5))
 plot2 
-plot3 <-
-        p2_data_frame %>% 
-        ggplot(aes(x = x, y = y, color = factor_sum)) + 
-        geom_point()+ 
-        labs(title = "The third scatterplot") +
-        theme(plot.title = element_text(hjust = 0.5))
+plot3 <- p2_df %>% 
+         ggplot(aes(x = x, y = y, color = factor_sum)) + 
+         geom_point() + 
+         labs(title = "The third scatterplot") +
+         theme(plot.title = element_text(hjust = 0.5))
 plot3 
 
+# Export the first scatterplot to project directory using ggsave.
 ggsave("plot1.png",plot1)
 
 ```
+ 
+In plot2 and plot3, the `color = ...` inside of  `aes()` are respectively numeric and factor variables, which correspond to gradient and discrete color scale, though in this case, the plot2 also shows only two colors.( Because only two value 0 or 1 can be taken).
 
 
 
